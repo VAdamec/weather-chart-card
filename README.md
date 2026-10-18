@@ -1,7 +1,18 @@
 <h1 align="center">Weather Chart Card</h1>
 
-# No Longer Maintained
-This repository is no longer maintained. Feel free to fork it if you find it useful.
+## Compatibility work in this checkout
+
+The original upstream project is no longer maintained. This checkout contains a
+compatibility refactor targeting Home Assistant 2026.10, preserving existing YAML
+options and the card layout. It fixes forecast subscription cleanup/reconnection,
+clock and autoscroll timers, unavailable entities, forecast alignment and the
+visual editor. The editor keeps the Main, Forecast, Units and Alternate entities
+pages and uses themed native controls instead of removed HA frontend components.
+Built-in animated icons are embedded in the JavaScript bundle; custom `icons`
+paths still work. No external JavaScript or icon CDN is needed for built-in icons.
+
+Validation status and local installation: [compatibility notes](docs/compatibility.md).
+These local changes are not installed in Home Assistant or published upstream.
 
 [![Buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/mlamberts7I)
 [![PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=HZUUW64FRM2J2)

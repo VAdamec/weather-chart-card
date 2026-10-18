@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Weather Chart Card regression fixture</title>
+<style>
+  :root { --primary-text-color: #202b38; --secondary-text-color: #58697b; --primary-color: #167bbf;
+    --card-background-color: #fff; --divider-color: #dce3ea; --ha-color-form-background: #f6f8fb; }
+  body { background: #eef2f7; margin: 24px; font-family: system-ui, sans-serif; color: var(--primary-text-color); }
+  #card-container { width: 460px; margin-bottom: 24px; }
+  #editor-container { width: 680px; background: #fff; border-radius: 12px; padding: 20px; }
+  weather-chart-card, weather-chart-card-editor { display: block; }
+</style>
+<h1>Weather Chart Card</h1>
+<div id="card-container"></div><div id="editor-container" hidden></div>
+<script type="module">
+  // Only the outer card shell is simulated. The editor must work without HA form components.
+  customElements.define('ha-card', class extends HTMLElement {
+    connectedCallback() {
+      if (this.shadowRoot) return;
+      this.attachShadow({ mode: 'open' }).innerHTML = `<style>:host { display:block; position:relative;
+        background:var(--card-background-color); border:1px solid var(--divider-color); border-radius:12px;
+        overflow:hidden } header { font-size:22px; padding:16px; }</style><header></header><slot></slot>`;
+      this.shadowRoot.querySelector('header').textContent = this.getAttribute('header') || '';
+    }
+  });
+  const originalSetInterval = window.setInterval.bind(window);
+  const originalClearInterval = window.clearInterval.bind(window);
+  const intervals = new Map();
+  window.setInterval = (fn, delay, ...args) => {
+    const id = originalSetInterval(fn, delay, ...args); intervals.set(id, delay); return id;
+  };
+  window.clearInterval = id => { intervals.delete(id); originalClearInterval(id); };
+
+  await import('/dist/weather-chart-card.js');
+  window.makeForecasts = (type = 'hourly') => Array.from({ length: 12 }, (_, index) => ({
+    datetime: new Date(Date.now() + index * (type === 'daily' ? 86400000 : 3600000)).toISOString(),
+    temperature: 18 + index / 2, templow: 10 + index / 3,
+    precipitation: index % 3 === 0 ? 1.2 : 0, precipitation_probability: index * 7,
+    condition: index % 2 ? 'partlycloudy' : 'sunny', wind_speed: 12 + index, wind_bearing: 220,
+  }));
+  window.makeHass = connection => ({
+    connection, language: 'en', locale: { language: 'en' },
+    config: { unit_system: { temperature: '°C', length: 'km' } },
+    states: {
+      'weather.home': { state: 'sunny', last_changed: new Date().toISOString(), attributes: {
+        friendly_name: 'Home', temperature: 18.5, apparent_temperature: 0, humidity: 65, pressure: 1015,
+        pressure_unit: 'hPa', temperature_unit: '°C', precipitation_unit: 'mm',
+        wind_speed: 12, wind_speed_unit: 'km/h', wind_bearing: 220, supported_features: 3,
+      } },
+      'weather.other': { state: 'cloudy', last_changed: new Date().toISOString(), attributes: {
+        temperature: 12, temperature_unit: '°C', pressure_unit: 'hPa', pressure: 1000,
+        wind_speed_unit: 'km/h', supported_features: 3,
+      } },
+      'sun.sun': { state: 'above_horizon', attributes: {
+        next_rising: new Date(new Date().setHours(6, 0, 0)).toISOString(),
+        next_setting: new Date(new Date().setHours(18, 0, 0)).toISOString(),
+      } },
+      'sensor.temperature': { state: '19.7', attributes: { unit_of_measurement: '°C' } },
+    },
+  });
+  window.mount = (config = {}, options = {}) => {
+    window.card?.remove();
+    const harness = { subscriptions: [], intervals, deferred: options.deferred, reject: options.reject };
+    harness.connection = {
+      subscribeMessage(callback, message) {
+        const subscription = { callback, message, active: true, unsubscribed: 0 };
+        harness.subscriptions.push(subscription);
+        const unsubscribe = () => { subscription.active = false; subscription.unsubscribed++; };
+        if (harness.reject) return Promise.reject(new Error('Provider unavailable'));
+        if (harness.deferred) return new Promise(resolve => { subscription.resolve = () => resolve(unsubscribe); });
+        queueMicrotask(() => callback({ forecast: makeForecasts(message.forecast_type) }));
+        return Promise.resolve(unsubscribe);
+      },
+    };
+    window.harness = harness;
+    window.hass = makeHass(harness.connection);
+    const card = document.createElement('weather-chart-card');
+    card.setConfig({ entity: 'weather.home', forecast: { disable_animation: true }, ...config });
+    card.hass = window.hass;
+    window.card = card;
+    document.querySelector('#card-container').append(card);
+    return harness;
+  };
+  window.mountEditor = (config = {}) => {
+    const editor = document.createElement('weather-chart-card-editor');
+    editor.hass = window.hass;
+    editor.setConfig({ type: 'custom:weather-chart-card', entity: 'weather.home', ...config });
+    window.editor = editor;
+    window.edits = [];
+    editor.addEventListener('config-changed', event => window.edits.push(event.detail.config));
+    document.querySelector('#editor-container').hidden = false;
+    document.querySelector('#editor-container').replaceChildren(editor);
+  };
+  window.ready = true;
+</script>
+</html>

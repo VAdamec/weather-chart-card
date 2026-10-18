@@ -15,22 +15,29 @@
   "author": "Marc Lamberts",
   "license": "MIT",
   "dependencies": {
-    "chart.js": "^4.4.1",
+    "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "lit": "^2.8.0",
-    "relative-time": "^1.0.0"
+    "lit": "^3.3.3"
   },
   "devDependencies": {
-    "eslint": "^8.56.0",
-    "rollup": "^4.9.6",
-    "rollup-plugin-copy": "^3.5.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-serve": "^2.0.3"
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.56.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0",
+    "rollup": "^4.52.5"
   },
   "scripts": {
-    "start": "rollup -c rollup.config.dev.js --watch",
+    "start": "rollup -c --watch",
     "build": "npm run lint && npm run rollup",
-    "lint": "eslint 'src/**/*.js'",
-    "rollup": "rollup -c"
-  }
+    "lint": "eslint src tests playwright.config.js eslint.config.js rollup.config.mjs",
+    "rollup": "rollup -c",
+    "test": "npm run build && playwright test",
+    "test:browser": "playwright test"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "type": "module"
 }
