@@ -1,8 +1,8 @@
 <h1 align="center">Weather Chart Card</h1>
 
-## Compatibility work in this checkout
+## Maintained compatibility fork
 
-The original upstream project is no longer maintained. This checkout contains a
+The original upstream project is no longer maintained. This fork contains a
 compatibility refactor targeting Home Assistant 2026.10, preserving existing YAML
 options and the card layout. It fixes forecast subscription cleanup/reconnection,
 clock and autoscroll timers, unavailable entities, forecast alignment and the
@@ -11,17 +11,18 @@ pages and uses themed native controls instead of removed HA frontend components.
 Built-in animated icons are embedded in the JavaScript bundle; custom `icons`
 paths still work. No external JavaScript or icon CDN is needed for built-in icons.
 
-Validation status and local installation: [compatibility notes](docs/compatibility.md).
-These local changes are not installed in Home Assistant or published upstream.
+Validated on Home Assistant Core **2026.10.2**, including daily/hourly forecasts,
+editor saves, animated icons and dashboard navigation. See the
+[compatibility notes](docs/compatibility.md) and [live test report](docs/live-validation-2026-10-18.md).
 
 [![Buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/mlamberts7I)
 [![PayPal](https://img.shields.io/badge/Donate-PayPal-blue?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=HZUUW64FRM2J2)
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mlamberts78/weather-chart-card?style=flat-square)](https://github.com/mlamberts78/weather-chart-card/releases/latest)
-![GitHub downloads](https://img.shields.io/github/downloads/mlamberts78/weather-chart-card/total?style=flat-square)
-![GitHub release (latest by SemVer including pre-releases)](https://img.shields.io/github/downloads/mlamberts78/weather-chart-card/latest/total)
-[![HACS Validate](https://github.com/mlamberts78/weather-chart-card/actions/workflows/validate.yaml/badge.svg)](https://github.com/mlamberts78/weather-chart-card/actions/workflows/validate.yaml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/VAdamec/weather-chart-card?style=flat-square)](https://github.com/VAdamec/weather-chart-card/releases/latest)
+![GitHub downloads](https://img.shields.io/github/downloads/VAdamec/weather-chart-card/total?style=flat-square)
+![GitHub release (latest by SemVer including pre-releases)](https://img.shields.io/github/downloads/VAdamec/weather-chart-card/latest/total)
+[![HACS Validate](https://github.com/VAdamec/weather-chart-card/actions/workflows/validate.yml/badge.svg)](https://github.com/VAdamec/weather-chart-card/actions/workflows/validate.yml)
 
 ![weather-chart-card](https://github.com/mlamberts78/weather-chart-card/assets/93537082/bd5b9f6e-4125-4a19-9773-463e6d054bce)
 ![15-days](https://github.com/mlamberts78/weather-chart-card/assets/93537082/f4de6060-7005-4a6d-b1f3-3aa17c856c73)
@@ -30,7 +31,19 @@ These local changes are not installed in Home Assistant or published upstream.
 
 ### HACS
 
-This card is available in HACS (Home Assistant Community Store).
+Install this fork through **HACS → Custom repositories**:
+
+1. Add `https://github.com/VAdamec/weather-chart-card` as a **Dashboard** repository.
+2. If the original upstream repository is installed, remove that HACS installation
+   first; both repositories use the same installation directory and card names.
+   Keep your dashboard YAML and back up the installed JavaScript file.
+3. Download the latest release from this fork.
+4. Keep exactly one JavaScript module resource for
+   `/hacsfiles/weather-chart-card/weather-chart-card.js` and fully reload the frontend.
+
+Existing `custom:weather-chart-card` YAML works without renaming entities or cards.
+The original project is [mlamberts78/weather-chart-card](https://github.com/mlamberts78/weather-chart-card);
+original author attribution and licensing are retained.
 HACS is a third party community store and is not included in Home Assistant out of the box.
 
 #### Configuration variables:

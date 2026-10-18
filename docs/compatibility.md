@@ -1,8 +1,7 @@
 # Compatibility refactor
 
-Target: Home Assistant 2026.10. Existing `custom:weather-chart-card` YAML remains
-valid. This is a local refactor of the abandoned upstream project, not a published
-release. The card keeps its two chart styles, translations, alternate sensors and
+Target: Home Assistant 2026.10. [Live validation on 2026.10.2](live-validation-2026-10-18.md) completed on 2026-10-18. Existing `custom:weather-chart-card` YAML remains
+valid. This is a maintained fork of the abandoned upstream project. The card keeps its two chart styles, translations, alternate sensors and
 weather forecast WebSocket interface.
 
 ## Changes
@@ -55,15 +54,14 @@ serves a synthetic HA fixture; it is not a development connection to your HA.
 Copying these files or running the fixture does not install them through HACS.
 For HACS distribution, publish the changes in a fork's default branch or release
 and install that fork as a custom dashboard repository. The supplied `hacs.json`
-keeps the single JavaScript filename. No publication or HA installation is part
-of this local change.
+keeps the single JavaScript filename. Use the custom-repository instructions in the README for HACS installation.
 
 ## Validation boundary
 
 Automated browser checks use synthetic HA states and the forecast subscription
 contract, with the outer `ha-card` shell simulated. They do not prove a live HA
 2026.10 installation, actual provider behavior, theme integration, or HACS
-installation. Those checks remain pending until run in a real instance.
+installation. Selected real-instance checks have now passed; see the linked live validation report for exact coverage and remaining limits.
 
 ## Local verification on 2026-10-18
 
@@ -74,8 +72,7 @@ installation. Those checks remain pending until run in a real instance.
 - Rendered card and editor screenshots were inspected. Temperature labels are
   limited to one decimal (or integer rounding when configured), without changing
   the underlying forecast values.
-- `git diff --check`: passed. CI workflow added; GitHub CI has not been executed
-  from this checkout. Live HA/HACS verification remains pending as described above.
+- `git diff --check`: passed. GitHub browser-test CI passed for the original refactor commit. Subsequent live HA checks are recorded in the linked report; HACS fork installation remains untested.
 
 ## API references
 
